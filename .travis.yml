@@ -9,7 +9,6 @@ rvm:
   - 2.1
   - 2.2
   - jruby-head
-  - jruby-19mode
 
 gemfile:
   - Gemfile
