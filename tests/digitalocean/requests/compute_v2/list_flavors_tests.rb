@@ -10,7 +10,7 @@ Shindo.tests('Fog::Compute::DigitalOceanV2 | list_flavors request', ['digitaloce
     'price_monthly' => Float,
     'price_hourly' => Float,
     'regions' => Array,
-    'available' => Fog::Boolean,
+    'available' => Fog::Boolean
   }
 
   tests('success') do
