@@ -4,7 +4,7 @@
 
 This is the plugin Gem to talk to [Digitalocean](http://digitalocean.org) clouds via fog.
 
-The main maintainers for the Digitalocean sections are @jjasghar and TODO MORE. Please send CC them on pull requests.
+The main maintainers for the Digitalocean sections are @jjasghar and @h0lyalg0rithm. Please send CC them on pull requests.
 
 ## Installation
 
