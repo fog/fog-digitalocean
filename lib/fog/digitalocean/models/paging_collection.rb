@@ -1,6 +1,6 @@
 module Fog
   module Compute
-    class DigitalOceanV2
+    class DigitalOcean
       class PagingCollection < Fog::Collection
 
         attribute :next
@@ -17,6 +17,7 @@ module Fog
         end
 
         private
+
         def deep_fetch(hash, *path)
           path.inject(hash) do |acc, key|
             acc.respond_to?(:keys) ? acc[key] : nil

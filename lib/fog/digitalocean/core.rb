@@ -4,6 +4,6 @@ require 'fog/json'
 module Fog
   module DigitalOcean
     extend Fog::Provider
-    service(:compute_v2, 'Compute')
+    service(:compute, 'Compute')
   end
 end

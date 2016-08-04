@@ -16,11 +16,10 @@ respected that in the DigitalOcean's Fog provider.
 First, create a connection to the host:
 
 ```ruby
-require 'fog'
+require 'fog/digitalocean'
 
 docean = Fog::Compute.new({
   :provider => 'DigitalOcean',
-  :version  => 'V2',
   :digitalocean_token   => 'poiuweoruwoeiuroiwuer', # your Access Token here
 })
 ```
