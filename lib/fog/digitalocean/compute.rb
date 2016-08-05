@@ -21,8 +21,10 @@ module Fog
       request :change_kernel
       request :create_server
       request :create_ssh_key
+      request :create_volume
       request :destroy_server
       request :delete_ssh_key
+      request :destroy_volume
       request :disable_backups
       request :enable_ipv6
       request :enable_private_networking
@@ -36,6 +38,7 @@ module Fog
       request :list_regions
       request :list_servers
       request :list_ssh_keys
+      request :list_volumes
       request :password_reset
       request :power_cycle
       request :power_off
