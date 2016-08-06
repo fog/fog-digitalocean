@@ -2,8 +2,8 @@ module Fog
   module Compute
     class DigitalOcean
       class Real
-        def attach_volume(volume_id, droplet_id, region)
-          body = { :type => 'attach', droplet_id: droplet_id, region: region}
+        def detach_volume(volume_id, droplet_id, region)
+          body = { :type => 'detach', droplet_id: droplet_id, region: region}
 
           encoded_body = Fog::JSON.encode(body)
 
@@ -20,31 +20,31 @@ module Fog
       end
 
       class Mock
-        def attach_volume(volume_id, droplet_id, region)
-					response         = Excon::Response.new
-					response.status  = 201
+        def detach_volume(volume_id, droplet_id, region)
+          response         = Excon::Response.new
+          response.status  = 201
 					response.body    = {
 						"action" => {
-							"id" => 72531856,
-							"status" => "completed",
-							"type" => "attach_volume",
-							"started_at" => "2015-11-12T17:51:03Z",
-							"completed_at" => "2015-11-12T17:51:14Z",
-							"resource_id" => "null",
-							"resource_type" => "volume",
+							"id" => 68212773,
+							"status" => "in-progress",
+							"type" => "detach_volume",
+							"started_at" => "2015-10-15T17:46:15Z",
+							"completed_at" => null,
+							"resource_id" => null,
+							"resource_type" => "backend",
 							"region" => {
 								"name" => "New York 1",
 								"slug" => "nyc1",
 								"sizes" => [
+									"512mb",
 									"1gb",
 									"2gb",
 									"4gb",
 									"8gb",
+									"16gb",
 									"32gb",
-									"64gb",
-									"512mb",
 									"48gb",
-									"16gb"
+									"64gb"
 								],
 								"features" => [
 									"private_networking",
@@ -58,9 +58,9 @@ module Fog
 						}
 					}
 
-          response
-        end
-      end
-    end
-  end
+					response
+				end
+			end
+		end
+	end
 end

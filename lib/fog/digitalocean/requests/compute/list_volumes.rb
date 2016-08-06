@@ -51,8 +51,8 @@ module Fog
 							}
 						],
 						"links" => {},
-						"meta": {
-							"total": 1
+						"meta" => {
+							"total" => 1
 						}
 					}
 

@@ -1,5 +1,5 @@
-Shindo.tests('Fog::Compute::DigitalOceanV2 | list_ssh_keys request', ['digitalocean', 'compute']) do
-  service = Fog::Compute.new(:provider => 'DigitalOcean', :version => 'V2')
+Shindo.tests('Fog::Compute::DigitalOcean | list_ssh_keys request', ['digitalocean', 'compute']) do
+  service = Fog::Compute.new(:provider => 'DigitalOcean')
 
   ssh_key_format = {
     'id' => Integer,

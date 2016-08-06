@@ -20,41 +20,47 @@ module Fog
       collection :volumes
 
       request_path 'fog/digitalocean/requests/compute'
-      request :attach_volume
-      request :change_kernel
-      request :create_server
-      request :create_ssh_key
+      request :list_volumes
       request :create_volume
-      request :destroy_server
-      request :delete_ssh_key
+      request :attach_volume
+      request :detach_volume
       request :destroy_volume
+      request :list_volume_actions
+
+      request :list_servers
+      request :create_server
+      request :destroy_server
+      request :get_server_details
+      request :change_kernel
       request :disable_backups
       request :enable_ipv6
       request :enable_private_networking
-      request :get_droplet_action
-      request :get_image_details
-      request :get_server_details
-      request :get_ssh_key
-      request :list_droplet_actions
-      request :list_flavors
-      request :list_images
-      request :list_regions
-      request :list_servers
-      request :list_ssh_keys
-      request :list_volumes
-      request :password_reset
       request :power_cycle
       request :power_off
       request :power_on
       request :reboot_server
+      request :password_reset
       request :rebuild
       request :rename
       request :resize
       request :restore
       request :shutdown
       request :snapshot
-      request :update_ssh_key
       request :upgrade
+
+      request :list_ssh_keys
+      request :create_ssh_key
+      request :get_ssh_key
+      request :update_ssh_key
+      request :delete_ssh_key
+
+      request :list_images
+      request :list_flavors
+      request :get_image_details
+
+      request :get_droplet_action
+      request :list_droplet_actions
+      request :list_regions
 
 
       class Mock

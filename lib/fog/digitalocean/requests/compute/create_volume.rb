@@ -4,7 +4,7 @@ module Fog
       # noinspection RubyStringKeysInHashInspection
       class Real
 
-        def create_volume(options)
+        def create_volume(options={})
           create_options = {
             :name        => "name",
             :region      => "nyc1",
@@ -31,17 +31,15 @@ module Fog
           response        = Excon::Response.new
           response.status = 201
 
-          data[:volumes] << {
-            "id" => Fog::Mock.random_numbers(6).to_i,
-            "fingerprint" => (["00"] * 16).join(':'),
-            "region" => options[:region], 
-            "size_gigabytes" => 10,
-            "description" => options[:description],
-            "name" => options[:name]
-          }
-
           response.body ={
-            'volume' => data[:volumes].last
+            'volume' => {
+              "id" => Fog::Mock.random_numbers(6).to_i,
+              "fingerprint" => (["00"] * 16).join(':'),
+              "region" => options[:region], 
+              "size_gigabytes" => 10,
+              "description" => options[:description],
+              "name" => options[:name]
+            }
           }
 
           response
