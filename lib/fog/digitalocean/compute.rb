@@ -16,8 +16,11 @@ module Fog
       collection :flavors
       model :ssh_key
       collection :ssh_keys
+      model :volume
+      collection :volumes
 
       request_path 'fog/digitalocean/requests/compute'
+      request :attach_volume
       request :change_kernel
       request :create_server
       request :create_ssh_key

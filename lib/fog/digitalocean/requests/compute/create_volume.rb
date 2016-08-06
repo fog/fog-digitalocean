@@ -4,11 +4,12 @@ module Fog
       # noinspection RubyStringKeysInHashInspection
       class Real
 
-        def create_volume(name, public_key)
+        def create_volume(options)
           create_options = {
-            :name       => name,
-            :public_key => public_key,
-          }
+            :name        => "name",
+            :region      => "nyc1",
+            :size_gigabytes => 1
+          }.merge(options)
 
           encoded_body = Fog::JSON.encode(create_options)
 
@@ -18,7 +19,7 @@ module Fog
               'Content-Type' => "application/json; charset=UTF-8",
             },
             :method  => 'POST',
-            :path    => '/v2/account/keys',
+            :path    => '/v2/volumes',
             :body    => encoded_body,
           )
         end
@@ -26,19 +27,21 @@ module Fog
 
       # noinspection RubyStringKeysInHashInspection
       class Mock
-        def create_volume(name, public_key)
+        def create_volume(options)
           response        = Excon::Response.new
           response.status = 201
 
-          data[:ssh_keys] << {
+          data[:volumes] << {
             "id" => Fog::Mock.random_numbers(6).to_i,
             "fingerprint" => (["00"] * 16).join(':'),
-            "public_key" => public_key,
-            "name" => name
+            "region" => options[:region], 
+            "size_gigabytes" => 10,
+            "description" => options[:description],
+            "name" => options[:name]
           }
 
           response.body ={
-            'ssh_key' => data[:ssh_keys].last
+            'volume' => data[:volumes].last
           }
 
           response

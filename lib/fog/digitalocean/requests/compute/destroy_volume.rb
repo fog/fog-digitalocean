@@ -10,7 +10,7 @@ module Fog
               'Content-Type' => "application/json; charset=UTF-8",
             },
             :method  => 'DELETE',
-            :path    => "/v2/account/keys/#{id}",
+            :path    => "/v2/volumes/#{id}",
           )
         end
       end
@@ -18,7 +18,7 @@ module Fog
       # noinspection RubyStringKeysInHashInspection
       class Mock
         def destroy_volume(id)
-          self.data[:ssh_keys].select! do |key|
+          self.data[:volumes].select! do |key|
             key["id"] != id
           end
 
