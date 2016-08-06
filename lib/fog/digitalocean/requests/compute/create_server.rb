@@ -25,6 +25,8 @@ module Fog
             create_options[opt] = options[opt] if options[opt]
           end
 
+          create_options[:volume] = options[:volume] || []
+
           encoded_body = Fog::JSON.encode(create_options)
 
           request(
