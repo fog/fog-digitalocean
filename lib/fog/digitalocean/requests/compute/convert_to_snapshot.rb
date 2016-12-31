@@ -32,8 +32,8 @@ module Fog
               'completed_at' => '2015-03-24T19:02:47Z',
               'resource_id' => 11060029,
               'resource_type' => 'image',
-              'region' => null,
-              'region_slug' => null
+              'region' => nil,
+              'region_slug' => nil
             }
           }
           response

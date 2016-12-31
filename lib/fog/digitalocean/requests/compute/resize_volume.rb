@@ -30,7 +30,7 @@ module Fog
               "type" => "resize",
               "started_at" => "2015-11-12T17:51:03Z",
               "completed_at" => "2015-11-12T17:51:14Z",
-              "resource_id" => null,
+              "resource_id" => nil,
               "resource_type" => "volume",
               "region" => {
                 "name" => "New York 1",

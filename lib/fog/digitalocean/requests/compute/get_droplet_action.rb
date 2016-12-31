@@ -21,7 +21,7 @@ module Fog
               'status'        => "in-progress",
               'type'          => "change_kernel",
               'started_at'    => "2014-11-14T16:31:00Z",
-              'completed_at'  => null,
+              'completed_at'  => nil,
               'resource_id'   => id,
               'resource_type' => "droplet",
               'region'        => "nyc3",

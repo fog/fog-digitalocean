@@ -23,7 +23,7 @@ module Fog
                 "type" => "attach_volume",
                 "started_at" => "2015-11-21T21:51:09Z",
                 "completed_at" => "2015-11-21T21:51:09Z",
-                "resource_id" => null,
+                "resource_id" => nil,
                 "resource_type" => "volume",
                 "region" => {
                   "name" => "New York 1",

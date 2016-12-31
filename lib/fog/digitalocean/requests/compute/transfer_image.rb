@@ -29,7 +29,7 @@ module Fog
               'status' => 'in-progress',
               'type' => 'transfer',
               'started_at' => '2014-11-14T16:42:45Z',
-              'completed_at' => null,
+              'completed_at' => nil,
               'resource_id' => 7938269,
               'resource_type' => 'image',
               'region' => 'nyc3',

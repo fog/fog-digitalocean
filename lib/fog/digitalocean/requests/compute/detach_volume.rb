@@ -44,8 +44,8 @@ module Fog
 							"status" => "in-progress",
 							"type" => "detach_volume",
 							"started_at" => "2015-10-15T17:46:15Z",
-							"completed_at" => null,
-							"resource_id" => null,
+							"completed_at" => nil,
+							"resource_id" => nil,
 							"resource_type" => "backend",
 							"region" => {
 								"name" => "New York 1",
@@ -84,8 +84,8 @@ module Fog
 							"status" => "in-progress",
 							"type" => "detach_volume",
 							"started_at" => "2015-10-15T17:46:15Z",
-							"completed_at" => null,
-							"resource_id" => null,
+							"completed_at" => nil,
+							"resource_id" => nil,
 							"resource_type" => "backend",
 							"region" => {
 								"name" => "New York 1",
