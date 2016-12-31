@@ -24,7 +24,7 @@ module Fog
                 'id'            => 7555620,
                 'name'          => 'Nifty New Snapshot',
                 'distribution'  => 'Ubuntu',
-                'slug'          => nil,
+                'slug'          => 'nifty-new-snapshot-ubuntu',
                 'public'        => false,
                 'regions'       => %w(nyc2 nyc3),
                 'created_at'    => '2014-11-04T22:23:02Z',
