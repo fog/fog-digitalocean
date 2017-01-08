@@ -23,7 +23,7 @@ module Fog
               'id' => 7555620,
               'name' => 'Nifty New Snapshot',
               'distribution' => 'Ubuntu',
-              'slug' => null,
+              'slug' => nil,
               'public' => false,
               'regions' => [
                 'nyc2',
