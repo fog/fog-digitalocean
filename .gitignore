@@ -4,8 +4,11 @@
 *.sw?
 .rbenv
 .rvmrc
-.ruby-gemset
-.ruby-version
+
+# https://github.com/fog/fog/wiki/Create-New-Provider-from-Scratch
+#.ruby-gemset
+#.ruby-version
+
 .bundle
 .DS_Store
 .idea
