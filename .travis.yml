@@ -7,9 +7,10 @@ script: bundle exec rake test
 cache: bundler
 
 rvm:
-  - 2.0
   - 2.1
   - 2.2
+  - 2.3
+  - 2.4
   - jruby-head
 
 gemfile:
