@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mime-types-data'
   s.add_development_dependency 'rubocop'
 
-  s.add_dependency 'fog-core',  '~> 1.42'
+  s.add_dependency 'fog-core',  '~> 1.43'
   s.add_dependency 'fog-json',  '>= 1.0'
   s.add_dependency 'fog-xml',   '>= 0.1'
   s.add_dependency 'ipaddress', '>= 0.5'
