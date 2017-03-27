@@ -50,8 +50,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mime-types'
   s.add_development_dependency 'mime-types-data'
   s.add_development_dependency 'rubocop'
-  s.add_development_dependency 'coveralls'
-  s.add_development_dependency 'term-ansicolor'
 
   s.add_dependency 'fog-core',  '~> 1.42'
   s.add_dependency 'fog-json',  '>= 1.0'
