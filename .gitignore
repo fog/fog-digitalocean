@@ -31,3 +31,4 @@ tags
 tests/digitalocean/fixtures/
 
 providers/*/doc
+.rakeTasks

@@ -2,16 +2,20 @@ language: ruby
 
 sudo: false
 
-script: bundle exec rake test
+script:
+  |
+  bundle config disable_exec_load true
+  bundle exec rake test
 
 cache: bundler
 
 rvm:
   - 2.1
   - 2.2
+  - jruby-head
+  # Unable to make these work right now [2017-03-25 Christo]
   - 2.3.1
   - 2.4.0
-  - jruby-head
 
 gemfile:
   - Gemfile
