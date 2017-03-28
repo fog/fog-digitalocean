@@ -4,6 +4,8 @@ module Fog
   module DNS
     class DigitalOcean
       class Records < Fog::Compute::DigitalOcean::PagingCollection
+        attribute :domain
+
         model Fog::DNS::DigitalOcean::Record
 
         # Returns list of records
@@ -33,6 +35,11 @@ module Fog
           new(key) if key
         rescue Fog::Errors::NotFound
           nil
+        end
+
+        def new(attributes = {})
+          requires :domain
+          super({ :zone => zone }.merge!(attributes))
         end
       end
     end

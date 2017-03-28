@@ -30,6 +30,12 @@ module Fog
           response        = Excon::Response.new
           response.status = 200
 
+          data[:domains] << {
+              'name'      => name,
+              'ttl'       => 1800,
+              'zone_file' => "$ORIGIN #{name}.\n$TTL 1800\n#{name}. IN SOA ns1.digitalocean.com. hostmaster.#{name}. 1490145863 10800 3600 604800 1800\n#{name}. 1800 IN NS ns1.digitalocean.com.\n#{name}. 1800 IN NS ns2.digitalocean.com.\n#{name}. 1800 IN NS ns3.digitalocean.com.\n#{name}. 1800 IN A #{ip_address}\n"
+          }
+
           response.body ={
             'domain' => data[:domains].last
           }

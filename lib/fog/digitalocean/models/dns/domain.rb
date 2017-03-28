@@ -5,13 +5,15 @@ module Fog
         identity :name
         attribute :ttl
         attribute :zone_file
-        # attribute :ip_address
+        attribute :ip_address
 
         def create
           requires :name, :ip_address
-          merge_attributes(service.create_domain(name, ip_address).body['name'])
+          resp = service.create_domain(name, ip_address)
+          merge_attributes(resp.body['domain'])
           true
         end
+        alias :save :create
 
         def delete
           requires :name
@@ -21,6 +23,15 @@ module Fog
         def get
           requires :name
           service.get_domain name
+        end
+
+        def records
+          @records ||= begin
+            Fog::DNS::DigitalOcean::Records.new(
+                :domain => self,
+                :service => service
+            )
+          end
         end
       end
     end
