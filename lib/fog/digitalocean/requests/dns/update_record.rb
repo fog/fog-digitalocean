@@ -1,10 +1,12 @@
+require 'active_support/core_ext/hash/indifferent_access'
+
 module Fog
   module DNS
     class DigitalOcean
       # noinspection RubyStringKeysInHashInspection
       class Real
 
-        def update_record(name, id, rec={})
+        def update_record(name, rec={})
           update_options = {
             :type       => rec[:type],
           }
@@ -20,7 +22,7 @@ module Fog
               'Content-Type' => "application/json; charset=UTF-8",
             },
             :method  => 'POST',
-            :path    => "/v2/domains/#{name}/records/#{id}",
+            :path    => "/v2/domains/#{name}/records/#{rec[:id]}",
             :body    => encoded_body,
           )
         end
@@ -28,11 +30,12 @@ module Fog
 
       # noinspection RubyStringKeysInHashInspection
       class Mock
-        def update_record(name, id, rec={})
+        def update_record(name, rec={})
           response        = Excon::Response.new
           response.status = 200
 
-          updated = data[:domain_records][name].select{ |rec| rec['id'] == id }.last
+          updated = data[:domain_records][name].select{ |rec| rec['id'] == rec[:id] }.last.with_indifferent_access
+          updated[:id] = Fog::Mock.random_numbers(8).to_i
           updated.merge!(rec)
           response.body = {
             "domain_record" => updated

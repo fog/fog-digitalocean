@@ -16,12 +16,23 @@ module Fog
       # noinspection RubyStringKeysInHashInspection
       class Mock
         def get_record(name, id)
+          id = id['id'] if id.is_a?(Hash)
           response        = Excon::Response.new
-          response.status = 200
 
-          response.body = {
-              "domain_record" => data[:domain_records][name].last
-          }
+          recs = data[:domain_records][name].select { |rec| rec['id'] == id }
+          if recs.size > 0
+            response.status = 200
+            response.body = {
+                "domain_record" => recs.last
+            }
+          else
+            response.status = 404
+            response.body = {
+                'id'      => 'not_found',
+                'message' => 'The resource you were accessing could not be found.'
+            }
+            raise Fog::Errors::NotFound.new(response.body['message'])
+          end
 
           response
         end

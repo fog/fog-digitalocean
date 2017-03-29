@@ -7,6 +7,12 @@ module Fog
         attribute :zone_file
         attribute :ip_address
 
+        def initialize(attributes={})
+          attributes = attributes.with_indifferent_access
+          attributes[:ip_address] ||= '127.0.0.1'
+          super
+        end
+
         def create
           requires :name, :ip_address
           resp = service.create_domain(name, ip_address)
@@ -19,6 +25,7 @@ module Fog
           requires :name
           service.delete_domain name
         end
+        alias :destroy :delete
 
         def get
           requires :name

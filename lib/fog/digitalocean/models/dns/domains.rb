@@ -15,7 +15,7 @@ module Fog
         # @see https://developers.digitalocean.com/documentation/v2/#list-all-keys
         def all(filters = {})
           data = service.list_domains(filters)
-          links = data.body["links"]
+          links = data.body['meta']['links']
           get_paged_links(links)
           keys = data.body["domains"]
           load(keys)

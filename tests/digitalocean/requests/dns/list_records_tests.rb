@@ -13,11 +13,22 @@ Shindo.tests('Fog::DNS::DigitalOcean | list_records("domain.net") request', ['di
 
   tests('success') do
     tests('#list_records') do
-      service.list_records('domain.net').body['domain_records'].each do |record|
-        tests('format').data_matches_schema(record_format) do
-          record
+      response = service.list_records('domain.net')
+      if response.status == 200
+        domain_records = service.list_records('domain.net').body['domain_records']
+
+        test('record count') do
+          domain_records.size == 4
+        end
+
+        domain_records.each do |record|
+          tests('format').data_matches_schema(record_format) do
+            record
+          end
         end
       end
+
+      response.status == 200
     end
   end
 end

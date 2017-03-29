@@ -1,4 +1,5 @@
 require 'fog/digitalocean/core'
+require 'active_support/core_ext/hash/indifferent_access'
 
 module Fog
   module DNS

@@ -17,11 +17,21 @@ module Fog
       class Mock
         def get_domain(name)
           response        = Excon::Response.new
-          response.status = 200
 
-          response.body = {
-            'domain' => data[:domains].select{ |dom| dom['name'].eql?(name) }.last
-          }
+          domains = data[:domains].select{ |dom| dom['name'].eql?(name) }
+          if domains.size > 0
+            response.status = 200
+            response.body = {
+                'domain' => domains.last
+            }
+          else
+            response.status = 404
+            response.body = {
+                'id'      => 'not_found',
+                'message' => 'The resource you were accessing could not be found.'
+            }
+            raise Fog::Errors::NotFound.new(response.body['message'])
+          end
 
           response
         end

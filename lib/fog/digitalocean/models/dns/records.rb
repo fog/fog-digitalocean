@@ -1,3 +1,4 @@
+# require 'fog/digitalocean/models/record'
 require 'fog/digitalocean/models/paging_collection'
 
 module Fog
@@ -16,11 +17,20 @@ module Fog
         # @raise [Fog::DNS::DigitalOceanV2::ServiceError]
         # @see https://developers.digitalocean.com/documentation/v2/#list-all-keys
         def all(filters = {})
-          data = service.list_domain_records(filters)
-          links = data.body["links"]
+          data = service.list_records(domain.name, filters)
+          links = data.body['meta']['links']
           get_paged_links(links)
-          keys = data.body["records"]
+          keys = data.body["domain_records"]
           load(keys)
+        end
+
+        def all!(filters = {})
+          list = all(filters)
+          begin
+            page = next_page(filters)
+            list += page if page
+          end while page
+          list
         end
 
         # Returns record
@@ -31,15 +41,24 @@ module Fog
         # @raise [Fog::DNS::DigitalOceanV2::ServiceError]
         # @see https://developers.digitalocean.com/documentation/v2/#retrieve-an-existing-key
         def get(id)
-          key = service.get_domain(id).body['id']
-          new(key) if key
+          resp = service.get_record(domain.name, id)
+          key = resp.body['domain_record'] rescue nil
+          if key
+            new(key)
+          else
+            nil
+          end
         rescue Fog::Errors::NotFound
           nil
         end
 
         def new(attributes = {})
           requires :domain
-          super({ :zone => zone }.merge!(attributes))
+          super({ :domain => domain }.merge!(attributes))
+        end
+
+        def to_s
+          @domain
         end
       end
     end

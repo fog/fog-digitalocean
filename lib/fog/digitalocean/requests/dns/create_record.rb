@@ -32,6 +32,8 @@ module Fog
           response        = Excon::Response.new
           response.status = 200
 
+          data[:domain_records][name] << rec.dup
+          data[:domain_records][name].last['id'] = Fog::Mock.random_numbers(8).to_i
           response.body = {
             "domain_record" => data[:domain_records][name].last
           }

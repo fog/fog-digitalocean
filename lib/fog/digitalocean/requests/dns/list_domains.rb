@@ -16,6 +16,8 @@ module Fog
       class Mock
         def list_domains(filters = {})
           response        = Excon::Response.new
+          raise Fog::Errors::NotFound response.body['message'] unless data[:domains] && data[:domains].count > 0
+
           response.status = 200
           response.body   = {
               "domains" => data[:domains],

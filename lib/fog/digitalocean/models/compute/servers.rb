@@ -17,7 +17,7 @@ module Fog
         # @see https://developers.digitalocean.com/documentation/v2/#droplets
         def all(filters = {})
           data = service.list_servers(filters)
-          links = data.body["links"]
+          links = data.body['meta']['links']
           get_paged_links(links) 
           droplets = data.body["droplets"]
           load(droplets)
