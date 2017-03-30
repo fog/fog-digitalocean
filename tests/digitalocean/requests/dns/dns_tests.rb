@@ -1,9 +1,11 @@
+require 'active_support/core_ext/hash/indifferent_access'
+
 Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) do
 
   @domain_count = 0
   @new_records  = []
   @domain_name  = generate_unique_domain
-  @domain       = Fog::DNS[:digitalocean].domains.create(:name => generate_unique_domain)
+  # @domain       = Fog::DNS[:digitalocean].domains.create(:name => generate_unique_domain)
 
   @service = Fog::DNS[:digitalocean]
 
@@ -23,38 +25,27 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
     test('create simple zone') {
       result = false
 
-      response = @service.create_domain(@domain_name)
-      if response.status == 201
+      response = @service.create_domain(@domain_name, '1.2.3.4')
+      if response.status == 200
 
-        zone        = response.body['HostedZone']
-        change_info = response.body['ChangeInfo']
-        ns_servers  = response.body['NameServers']
+        domain     = response.body['domain']
+        name       = domain['name']
+        ttl        = domain['ttl']
+        zone_file  = domain['zone_file']
 
-        if (zone and change_info and ns_servers)
+        if name and ttl and zone_file
 
-          @zone_id = zone['Id']
-          caller_ref = zone['CallerReference']
-          @change_id = change_info['Id']
-          status = change_info['Status']
-          ns_srv_count = ns_servers.count
+          require 'zonefile'
 
-          if (@zone_id.length > 0) and (caller_ref.length > 0) and (@change_id.length > 0) and
-             (status.length > 0) and (ns_srv_count > 0)
+          zf = ::Zonefile.new(zone_file)
+
+          @zone_id = name
+          @origin = zf.soa.with_indifferent_access[:origin]
+          ns_srv_count = zf.records.with_indifferent_access[:ns].size
+
+          if (@zone_id.length < @origin.length) and (ns_srv_count > 0) and (ttl.to_i == zf.ttl.to_i)
             result = true
           end
-        end
-      end
-
-      result
-    }
-
-    test("get status of change #{@change_id}") {
-      result = false
-      response = @service.get_change(@change_id)
-      if response.status == 200
-        status = response.body['Status']
-        if (status == 'PENDING') or (status == 'INSYNC')
-          result = true
         end
       end
 
@@ -66,16 +57,24 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
 
       response = @service.get_domain(@zone_id)
       if response.status == 200
-        zone = response.body['HostedZone']
-        zone_id = zone['Id']
-        name = zone['Name']
-        caller_ref = zone['CallerReference']
-        ns_servers = response.body['NameServers']
+        domain     = response.body['domain']
+        name       = domain['name']
+        ttl        = domain['ttl']
+        zone_file  = domain['zone_file']
+        @zone_id = name
 
-        # AWS returns domain with a dot at end - so when compare, remove dot
-        if (zone_id == @zone_id) and (name.chop == @domain_name) and (caller_ref.length > 0) and
-           (ns_servers.count > 0)
-           result = true
+        if name and ttl and zone_file
+
+          require 'zonefile'
+
+          zf = ::Zonefile.new(zone_file)
+
+          origin = zf.soa.with_indifferent_access[:origin]
+          ns_srv_count = zf.records.with_indifferent_access[:ns].size
+
+          if (name.length < origin.length) and (ns_srv_count > 0) and (ttl.to_i == zf.ttl.to_i)
+            result = true
+          end
         end
       end
 
@@ -88,153 +87,140 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
       response = @service.list_domains
       if response.status == 200
 
-        zones= response.body['HostedZones']
+        zones = response.body['domains']
         if (zones.count > 0)
-          zone = zones[0]
-          zone_id = zone['Id']
-          zone_name= zone['Name']
-          caller_ref = zone['CallerReference']
-        end
-        max_items = response.body['MaxItems']
+          domain     = zones.last
+          name       = domain['name']
+          ttl        = domain['ttl']
+          zone_file  = domain['zone_file']
 
-        if (zone_id.length > 0) and (zone_name.length > 0) and (caller_ref.length > 0) and
-           (max_items > 0)
-          result = true
+          if name and ttl and zone_file
+
+            require 'zonefile'
+
+            zf = ::Zonefile.new(zone_file)
+
+            origin = zf.soa.with_indifferent_access[:origin]
+            ns_srv_count = zf.records.with_indifferent_access[:ns].size
+
+            if (name.length < origin.length) and (ns_srv_count > 0) and (ttl.to_i == zf.ttl.to_i)
+              result = true
+            end
+          end
         end
       end
 
       result
     end
 
-    test("add a A resource record") {
-      # create an A resource record
-      host = 'www.' + @domain_name
-      ip_addrs = ['1.2.3.4']
-      resource_record = { :name => host, :type => 'A', :ttl => 3600, :resource_records => ip_addrs }
-      resource_record_set = resource_record.merge(:action => 'CREATE')
+    tests('add records') do
+      require 'base64'
+      # name: A, AAAA, CNAME, TXT, SRV, data: A, AAAA, CNAME, MX, TXT, SRV, NS
+      [
+        { name: 'www.' + @domain_name,  type: 'A',      ttl: 3600, data: '1.2.3.4' },
+        { name: 'www.' + @domain_name,  type: 'AAAA',   ttl: 3600, data: '1.2.3.4' },
+        { name: 'mail.' + @domain_name, type: 'CNAME',  ttl: 3600, data: 'www.' + @domain_name },
+        { name: @domain_name,           type: 'MX',     ttl: 3600, data: 'mail.' + @domain_name, priority: 6 },
+        { name: @domain_name,           type: 'TXT',    ttl: 3600, data: Base64.encode64('txt.' + @domain_name) },
+        { name: @domain_name,           type: 'SRV',    ttl: 3600, data: 'srv.' + @domain_name, priority: 6, port: 666, weight: 6 },
+      ].each do |resource_record|
+        rr = resource_record.with_indifferent_access
+        test("add a #{rr[:type]} resource record") {
+          # create an resource record
+          response = @service.create_record(@zone_id, rr)
 
-      change_batch = []
-      change_batch << resource_record_set
-      options = { :comment => 'add A record to domain'}
-      response = @service.change_resource_record_sets(@zone_id, change_batch, options)
+          if response.status == 200
+            dr = response.body['domain_record'].with_indifferent_access
+            @new_records << dr
+            @service.get_record(@zone_id, dr["id"]).body['domain_record']["name"].eql?(rr[:name])
+          else
+            false
+          end
+        }
+      end
 
-      Fog.wait_for { @service.get_change(response.body["Id"]).body["Status"] != "PENDING" }
+    tests('update NS records') do
+      require 'base64'
+      ns_records = @service.list_records(@zone_id).body['domain_records'].select { |rec| rec['type'].eql?('NS') }
+      ns_records.each do |resource_record|
+        rr = resource_record.with_indifferent_access
+        test("update a #{rr[:type]} resource record") {
+          # update an resource record
+          rr[:data].gsub!(%r{^(ns[1-3]\.).*}, '\1'+@zone_id)
+          response = @service.update_record(@zone_id, rr)
 
-      @new_records << resource_record
+          if response.status == 200
+            dr = response.body['domain_record'].with_indifferent_access
+            @new_records << dr
+            @service.get_record(@zone_id, dr["id"]).body['domain_record']["name"].eql?(rr[:name])
+          else
+            false
+          end
+        }
+      end
 
-      @service.get_change(response.body["Id"]).body["Status"] == "INSYNC"
-    }
+    end
 
-    test("add a CNAME resource record") {
-      # create a CNAME resource record
-      host = 'mail.' + @domain_name
-      value = ['www.' + @domain_name]
-      resource_record = { :name => host, :type => 'CNAME', :ttl => 3600, :resource_records => value }
-      resource_record_set = resource_record.merge(:action => 'CREATE')
-
-      change_batch = []
-      change_batch << resource_record_set
-      options = { :comment => 'add CNAME record to domain'}
-      response = @service.change_resource_record_sets(@zone_id, change_batch, options)
-
-      Fog.wait_for { @service.get_change(response.body["Id"]).body["Status"] != "PENDING" }
-
-      @new_records << resource_record
-
-      @service.get_change(response.body["Id"]).body["Status"] == "INSYNC"
-    }
-
-    test("add a MX resource record") {
-      # create a MX resource record
-      host = @domain_name
-      value = ['7 mail.' + @domain_name]
-      resource_record = { :name => host, :type => 'MX', :ttl => 3600, :resource_records => value }
-      resource_record_set = resource_record.merge( :action => 'CREATE')
-
-      change_batch = []
-      change_batch << resource_record_set
-      options = { :comment => 'add MX record to domain'}
-      response = @service.change_resource_record_sets(@zone_id, change_batch, options)
-
-      Fog.wait_for { @service.get_change(response.body["Id"]).body["Status"] != "PENDING" }
-
-      @new_records << resource_record
-
-      @service.get_change(response.body["Id"]).body["Status"] == "INSYNC"
-    }
-
-    test("add an ALIAS resource record") {
-      # create a load balancer
-      @elb_connection.create_load_balancer(["us-east-1a"], "fog", [{"Protocol" => "HTTP", "LoadBalancerPort" => "80", "InstancePort" => "80"}])
-
-      elb_response   = @elb_connection.describe_load_balancers("LoadBalancerNames" => "fog")
-      elb            = elb_response.body["DescribeLoadBalancersResult"]["LoadBalancerDescriptions"].first
-      domain_id = elb["CanonicalHostedZoneNameID"]
-      dns_name       = elb["DNSName"]
-
-      # create an ALIAS record
-      host = @domain_name
-      alias_target = {
-        :domain_id         => domain_id,
-        :dns_name               => dns_name,
-        :evaluate_target_health => false
-      }
-      resource_record = { :name => host, :type => 'A', :alias_target => alias_target }
-      resource_record_set = resource_record.merge(:action => 'CREATE')
-
-      change_batch = []
-      change_batch << resource_record_set
-      options = { :comment => 'add ALIAS record to domain'}
-
-      puts "Hosted Zone ID (ELB): #{domain_id}"
-      puts "DNS Name (ELB): #{dns_name}"
-      puts "Zone ID for Route 53: #{@zone_id}"
-
-      response = @service.change_resource_record_sets(@zone_id, change_batch, options)
-
-      Fog.wait_for { @service.get_change(response.body["Id"]).body["Status"] != "PENDING" }
-
-      @new_records << resource_record
-
-      @service.get_change(response.body["Id"]).body["Status"] == "INSYNC"
-    }
-
-
-    tests("list resource records").formats(AWS::DNS::Formats::LIST_RESOURCE_RECORD_SETS)  {
+    tests("list resource records")  {
       # get resource records for zone
-      @service.list_resource_record_sets(@zone_id).body
+      records = @service.list_records(@zone_id).body['domain_records'].map { |rec| rec.with_indifferent_access }
+      rec_ids = @new_records.map { |rec| rec[:id] }
+      test('all records found') do
+        records.select { |rec|
+          rec_ids.include?(rec[:id])
+        }.size == @new_records.size
+      end
     }
 
     test("delete #{@new_records.count} resource records") {
-      change_batch = @new_records.map { |record| record.merge(:action => 'DELETE') }
-      options      = { :comment => 'remove records from domain'}
+      change_batch = @new_records.map { |record| { id: record[:id] }.with_indifferent_access }
 
-      response = @service.change_resource_record_sets(@zone_id, change_batch, options)
+      results = @new_records.map do |rec|
+        response = @service.delete_record(@zone_id, rec)
+        if response.status == 200
+          true
+        else
+          false
+        end
+      end
+      results.select { |res| res === false }.size == 0
+    }
 
-      Fog.wait_for { @service.get_change(response.body["Id"]).body["Status"] != "PENDING" }
-
-      @service.get_change(response.body["Id"]).body["Status"] == "INSYNC"
+    tests("test remaining resource records")  {
+      # get resource records for zone
+      records = @service.list_records(@zone_id).body['domain_records'].map { |rec| rec.with_indifferent_access }
+      # rec_ids = @new_records.map { |rec| rec[:id] }
+      test('only remaining records found') do
+        records.size == 1
+      end
+      test('delete only remaining record') do
+        response = @service.delete_record(@zone_id, records.last)
+        response.status == 200
+      end
+      # rec_ids = @new_records.map { |rec| rec[:id] }
+      test('no records found') do
+        @service.list_records(@zone_id).body['domain_records'].size == 0
+      end
     }
 
     test("delete hosted zone #{@zone_id}") {
-      # cleanup the ELB as well
-      @elb_connection.delete_load_balancer("fog")
-
       @service.delete_domain(@zone_id).status == 200
     }
 
   end
 
-  tests('failure') do
-    tests('create hosted zone using invalid domain name').raises(Excon::Errors::BadRequest) do
-      pending if Fog.mocking?
-      @service.create_domain('invalid-domain')
-    end
+    tests('failure') do
+      tests('create hosted zone using invalid domain name').raises(Excon::Errors::BadRequest) do
+        pending if Fog.mocking?
+        @service.create_domain('invalid-domain')
+      end
 
-    tests('get hosted zone using invalid ID').raises(Excon::Errors::NotFound) do
-      pending if Fog.mocking?
-      zone_id = 'dummy-id'
-      @service.get_domain(zone_id)
+      tests('get hosted zone using invalid ID').raises(Excon::Errors::NotFound) do
+        pending if Fog.mocking?
+        zone_id = 'dummy-id'
+        @service.get_domain(zone_id)
+      end
+
     end
 
   end
