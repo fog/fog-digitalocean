@@ -169,35 +169,35 @@ module Fog
         end
       end
 
-      class Real
-        def initialize(options={})
-          digitalocean_token = options[:digitalocean_token]
-          persistent         = false
-          options            = {
-            headers: {
-              'Authorization' => "Bearer #{digitalocean_token}",
-            }
-          }
-          @connection        = Fog::Core::Connection.new 'https://api.digitalocean.com', persistent, options
-        end
-
-        def request(params)
-          params[:headers] ||= {}
-          begin
-            response = @connection.request(params)
-          rescue Excon::Errors::HTTPStatusError => error
-            raise case error
-                    when Excon::Errors::NotFound
-                      NotFound.slurp(error)
-                    else
-                      error
-                  end
-          end
-          unless response.body.empty?
-            response.body = Fog::JSON.decode(response.body)
-          end
-          response
-        end
+      class Real < Fog::Compute::DigitalOcean::Real
+        # def initialize(options={})
+        #   digitalocean_token = options[:digitalocean_token]
+        #   persistent         = false
+        #   options            = {
+        #     headers: {
+        #       'Authorization' => "Bearer #{digitalocean_token}",
+        #     }
+        #   }
+        #   @connection        = Fog::Core::Connection.new 'https://api.digitalocean.com', persistent, options
+        # end
+        #
+        # def request(params)
+        #   params[:headers] ||= {}
+        #   begin
+        #     response = @connection.request(params)
+        #   rescue Excon::Errors::HTTPStatusError => error
+        #     raise case error
+        #             when Excon::Errors::NotFound
+        #               NotFound.slurp(error)
+        #             else
+        #               error
+        #           end
+        #   end
+        #   unless response.body.empty?
+        #     response.body = Fog::JSON.decode(response.body)
+        #   end
+        #   response
+        # end
       end
     end
   end

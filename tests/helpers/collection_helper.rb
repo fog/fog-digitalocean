@@ -1,28 +1,39 @@
 def collection_tests(collection, params = {}, mocks_implemented = true)
   tests('success') do
 
+    # tests('valid name in params').returns(true) do
+    #   !params[:name].eql?(collection.domain.name)
+    # end
+    #
+    # params[:fqdn] = %(#{params[:name]}.#{collection.domain.name}.) unless params[:name].match(%r{\.$})
+
     tests("#new(#{params.inspect})").succeeds do
       pending if Fog.mocking? && !mocks_implemented
-      collection.new(params)
+      coll = collection.new(params)
+      @collection_size = coll.collection.size
+      true
     end
 
     tests("#create(#{params.inspect})").succeeds do
       pending if Fog.mocking? && !mocks_implemented
       @instance = collection.create(params)
+      @instance.name.eql?(params[:name])
     end
 
-    tests("#all").succeeds do
+    tests("#all").returns(@collection_size+1) do
       pending if Fog.mocking? && !mocks_implemented
-      collection.all
+      coll = collection.all
+      coll.size
     end
 
     if !Fog.mocking? || mocks_implemented
       @identity = @instance.identity
     end
 
-    tests("#get(#{@identity})").succeeds do
+    tests("#get(#{@identity})").returns(params[:name]) do
       pending if Fog.mocking? && !mocks_implemented
-      collection.get(@identity)
+      record = collection.get(@identity)
+      record.name
     end
 
     tests('Enumerable') do

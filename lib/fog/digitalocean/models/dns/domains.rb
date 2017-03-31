@@ -29,7 +29,7 @@ module Fog
         # @raise [Fog::DNS::DigitalOceanV2::ServiceError]
         # @see https://developers.digitalocean.com/documentation/v2/#retrieve-an-existing-key
         def get(id)
-          key = service.get_domain(id).body['name']
+          key = service.get_domain(id).body['domain']
           new(key) if key
         rescue Fog::Errors::NotFound
           nil

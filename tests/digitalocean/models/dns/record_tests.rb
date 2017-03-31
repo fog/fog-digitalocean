@@ -21,7 +21,7 @@ Shindo.tests("Fog::Dns[:digitalocean] | record", ['digitalocean', 'dns']) do
 
   end
 
-  tests("domains#destroy").succeeds do
+  tests("domain.destroy").succeeds do
     @domain.destroy
   end
 

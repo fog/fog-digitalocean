@@ -131,8 +131,12 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
 
           if response.status == 200
             dr = response.body['domain_record'].with_indifferent_access
-            @new_records << dr
-            @service.get_record(@zone_id, dr["id"]).body['domain_record']["name"].eql?(rr[:name])
+            if dr['name'].eql?(rr['name'])
+              @new_records << dr
+              @service.get_record(@zone_id, dr["id"]).body['domain_record']["name"].eql?(rr[:name])
+            else
+              false
+            end
           else
             false
           end

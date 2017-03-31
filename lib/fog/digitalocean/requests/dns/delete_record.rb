@@ -7,7 +7,7 @@ module Fog
         def delete_record(name, id)
           id = id.with_indifferent_access['id'] if id.is_a?(Hash)
           request(
-            :expects => [200],
+            :expects => [204],
             :method  => 'DELETE',
             :path    => "/v2/domains/#{name}/records/#{id}",
           )
@@ -19,7 +19,7 @@ module Fog
         def delete_record(name, id)
           id = id.with_indifferent_access['id'] if id.is_a?(Hash)
           response        = Excon::Response.new
-          response.status = 200
+          response.status = 204
 
           data[:domain_records][name].select!{ |rec| rec['id'] != id }
 

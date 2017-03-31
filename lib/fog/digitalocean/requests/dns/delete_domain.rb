@@ -6,7 +6,7 @@ module Fog
         def delete_domain(id)
           id = id.with_indifferent_access['domain'] if id.is_a?(Hash)
           request(
-            :expects => [200],
+            :expects => [204],
             :headers => {
               'Content-Type' => "application/json; charset=UTF-8",
             },
@@ -26,7 +26,7 @@ module Fog
           end
 
           response        = Excon::Response.new
-          response.status = 200
+          response.status = 204
           response
         end
       end

@@ -1,7 +1,7 @@
 Shindo.tests("Fog::DNS[:digitalocean] | records", ['digitalocean', 'dns']) do
 
   @domain = nil
-  tests("zones#create").succeeds do
+  tests("domains.create").succeeds do
     @domain = Fog::DNS[:digitalocean].domains.create(name: generate_unique_domain)
   end
 
