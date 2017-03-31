@@ -1,11 +1,9 @@
 def collection_tests(collection, params = {}, mocks_implemented = true)
-  tests('success') do
+  def fqdn(params)
+    @fqdn ||= params[:fqdn] ? params[:fqdn] : params[:name]
+  end
 
-    # tests('valid name in params').returns(true) do
-    #   !params[:name].eql?(collection.domain.name)
-    # end
-    #
-    # params[:fqdn] = %(#{params[:name]}.#{collection.domain.name}.) unless params[:name].match(%r{\.$})
+  tests('success') do
 
     tests("#new(#{params.inspect})").succeeds do
       pending if Fog.mocking? && !mocks_implemented
@@ -17,7 +15,7 @@ def collection_tests(collection, params = {}, mocks_implemented = true)
     tests("#create(#{params.inspect})").succeeds do
       pending if Fog.mocking? && !mocks_implemented
       @instance = collection.create(params)
-      @instance.name.eql?(params[:name])
+      @instance.name.eql?(fqdn(params)) || @instance.name.eql?('@')
     end
 
     tests("#all").returns(@collection_size+1) do
@@ -30,7 +28,7 @@ def collection_tests(collection, params = {}, mocks_implemented = true)
       @identity = @instance.identity
     end
 
-    tests("#get(#{@identity})").returns(params[:name]) do
+    tests("#get(#{@identity})").returns(fqdn(params)) do
       pending if Fog.mocking? && !mocks_implemented
       record = collection.get(@identity)
       record.name

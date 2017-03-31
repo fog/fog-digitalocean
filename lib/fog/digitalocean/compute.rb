@@ -104,8 +104,13 @@ module Fog
             response = @connection.request(params)
           rescue Excon::Errors::HTTPStatusError => error
             raise case error
-                    when Excon::Errors::NotFound
-                      NotFound.slurp(error)
+                  when Excon::Errors::NotFound
+                      klasa = self.class.name.split('::')
+                      klasa[-1] = 'NotFound'
+                      klass = klasa.inject(Object) { |mod, class_name|
+                        mod.const_get(class_name)
+                      }
+                      klass.slurp(error)
                     else
                       error
                   end

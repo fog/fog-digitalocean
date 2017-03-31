@@ -8,20 +8,19 @@ module Fog
 
         def update_record(name, rec={})
           update_options = {
-            :type       => rec[:type],
           }
-          %w(name data priority port weight).each do |fld|
+          %w(type name data priority port weight).each do |fld|
             update_options[fld.to_sym] = rec[fld.to_sym] if rec[fld.to_sym]
           end
 
           encoded_body = Fog::JSON.encode(update_options)
 
           request(
-            :expects => [201],
+            :expects => [200],
             :headers => {
               'Content-Type' => "application/json; charset=UTF-8",
             },
-            :method  => 'POST',
+            :method  => 'PUT',
             :path    => "/v2/domains/#{name}/records/#{rec[:id]}",
             :body    => encoded_body,
           )

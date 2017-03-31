@@ -1,5 +1,15 @@
 Shindo.tests("Fog::DNS[:digitalocean] | records", ['digitalocean', 'dns']) do
 
+  tests("domains.cleanup").succeeds do
+    tests = Fog::DNS[:digitalocean].domains.all.select { |domain|
+      domain.name =~ /^test-[0-9]{12}\.com/
+    }
+    tests.each do |domain|
+      domain.delete
+    end
+    true
+  end
+
   @domain = nil
   tests("domains.create").succeeds do
     @domain = Fog::DNS[:digitalocean].domains.create(name: generate_unique_domain)
@@ -7,9 +17,10 @@ Shindo.tests("Fog::DNS[:digitalocean] | records", ['digitalocean', 'dns']) do
 
   param_groups = [
     # A record
-    { :name => @domain.name, :type => 'A', :ttl => 3600, :data => '1.2.3.4' },
+    { :name => "#{@domain.name}.", :type => 'A', :ttl => 3600, :data => '1.2.3.4' },
+    { :name => '@', :type => 'A', :ttl => 3600, :data => '5.6.7.8' },
     # CNAME record
-    { :name => "www.#{@domain.name}", :type => "CNAME", :ttl => 300, :data => @domain.name}
+    { :name => "www", :fqdn => "www.#{@domain.name}.", :type => "CNAME", :ttl => 300, :data => "#{@domain.name}." }
   ]
 
   param_groups.each do |params|
@@ -19,17 +30,18 @@ Shindo.tests("Fog::DNS[:digitalocean] | records", ['digitalocean', 'dns']) do
   records = []
 
   100.times do |i|
-    records << @domain.records.create(:name => "#{i}.#{@domain.name}", :type => "A", :ttl => 3600, :data => '1.2.3.4')
+    records << @domain.records.create(:name => "#{i}", :type => "A", :ttl => 3600, :data => '1.2.3.4')
   end
 
-  records << @domain.records.create(:name => "*.#{@domain.name}", :type => "A", :ttl => 3600, :data => '1.2.3.4')
+  records << @domain.records.create(:name => "*", :type => "A", :ttl => 3600, :data => '1.2.3.4')
 
   tests("#all!").returns(105) do # We get an A record and 3 NS records "for free" ;)
     @domain.records.all!.size
   end
 
   tests("#all wildcard parsing").returns(true) do
-    @domain.records.map(&:name).include?("*.#{@domain.name}")
+    set = @domain.records.map(&:name)
+    set.include?("*.#{@domain.name}.")
   end
 
   records.each do |record|

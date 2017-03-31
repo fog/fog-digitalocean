@@ -1,5 +1,15 @@
 Shindo.tests("Fog::Dns[:digitalocean] | record", ['digitalocean', 'dns']) do
 
+  tests("domains.cleanup").succeeds do
+    tests = Fog::DNS[:digitalocean].domains.all.select { |domain|
+      domain.name =~ /^test-[0-9]{12}\.com/
+    }
+    tests.each do |domain|
+      domain.delete
+    end
+    true
+  end
+
   tests("domains#create").succeeds do
     @domain = Fog::DNS[:digitalocean].domains.create(name: generate_unique_domain, ip_address: '5.5.5.5')
   end

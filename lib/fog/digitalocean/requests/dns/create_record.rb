@@ -30,14 +30,47 @@ module Fog
       class Mock
         def create_record(name, rec={})
           response        = Excon::Response.new
-          response.status = 200
+          if rec.with_indifferent_access[:type] =~ /^A/
+            if rec.with_indifferent_access[:data] !~ /^[0-9]+/
+              response.status = 422
+              response.body = {
+                  "id" => "unprocessable_entity",
+                  "message" => "Data needs to in an IP address"
+              }
+            else
+              if rec.with_indifferent_access[:type] =~ /^AA/
+                if rec.with_indifferent_access[:data] !~ /:/
+                  response.status = 422
+                  response.body = {
+                      "id" => "unprocessable_entity",
+                      "message" => "IP address did not match IPv6 format (e.g. 2001:db8::ff00:42:8329)."
+                  }
+                else
+                  response.status = 200
+                end
+              else
+                response.status = 200
+              end
+            end
+          elsif rec.with_indifferent_access[:data] !~ /\.$/
+            response.status = 422
+            response.body = {
+                "id" => "unprocessable_entity",
+                "message" => "Data needs to end with a dot (.)"
+            }
+          else
+            response.status = 200
+          end
 
-          data[:domain_records][name] << rec.dup
-          data[:domain_records][name].last['name'] = %(#{data[:domain_records][name].last['name']}.#{name}.) unless data[:domain_records][name].last['name'].match(%r{\.$})
-          data[:domain_records][name].last['id'] = Fog::Mock.random_numbers(8).to_i
-          response.body = {
-            "domain_record" => data[:domain_records][name].last
-          }
+          if response.status == 200
+            data[:domain_records][name] << rec.dup
+            last = data[:domain_records][name].last
+            last['name'] = %(#{last['name']}.#{name}.) unless last['name'].match(%r{\.$}) unless last['name'].eql?('@') #|| last['name'].eql?('*')
+            last['id'] = Fog::Mock.random_numbers(8).to_i
+            response.body = {
+                "domain_record" => last
+            }
+          end
 
           response
         end
