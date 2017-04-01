@@ -29,8 +29,9 @@ module Fog
       # noinspection RubyStringKeysInHashInspection
       class Mock
         def create_record(name, rec={})
+          success_status = 201
           response        = Excon::Response.new
-          if rec.with_indifferent_access[:type] =~ /^A/
+          if rec.with_indifferent_access[:type] =~ /^(A|SRV)/
             if rec.with_indifferent_access[:data] !~ /^[0-9]+/
               response.status = 422
               response.body = {
@@ -46,11 +47,21 @@ module Fog
                       "message" => "IP address did not match IPv6 format (e.g. 2001:db8::ff00:42:8329)."
                   }
                 else
-                  response.status = 200
+                  response.status = success_status
                 end
               else
-                response.status = 200
+                response.status = success_status
               end
+            end
+          elsif rec.with_indifferent_access[:type] =~ /TXT/
+            if rec.with_indifferent_access[:data] =~ /[\r\n]/
+              response.status = 422
+              response.body = {
+                  "id" => "unprocessable_entity",
+                  "message" => "Data must not contain newlines"
+              }
+            else
+              response.status = success_status
             end
           elsif rec.with_indifferent_access[:data] !~ /\.$/
             response.status = 422
@@ -59,10 +70,10 @@ module Fog
                 "message" => "Data needs to end with a dot (.)"
             }
           else
-            response.status = 200
+            response.status = success_status
           end
 
-          if response.status == 200
+          if response.status == success_status
             data[:domain_records][name] << rec.dup
             last = data[:domain_records][name].last
             #last['name'] = %(#{last['name']}.#{name}.) unless last['name'].match(%r{\.$}) unless last['name'].eql?('@') #|| last['name'].eql?('*')
