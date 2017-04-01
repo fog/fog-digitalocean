@@ -20,7 +20,7 @@ Shindo.tests("Fog::DNS[:digitalocean] | records", ['digitalocean', 'dns']) do
     { :name => "#{@domain.name}.", :type => 'A', :ttl => 3600, :data => '1.2.3.4' },
     { :name => '@', :type => 'A', :ttl => 3600, :data => '5.6.7.8' },
     # CNAME record
-    { :name => "www", :fqdn => "www.#{@domain.name}.", :type => "CNAME", :ttl => 300, :data => "#{@domain.name}." }
+    { :name => "www", :type => "CNAME", :ttl => 300, :data => "#{@domain.name}." }
   ]
 
   param_groups.each do |params|
@@ -40,8 +40,8 @@ Shindo.tests("Fog::DNS[:digitalocean] | records", ['digitalocean', 'dns']) do
   end
 
   tests("#all wildcard parsing").returns(true) do
-    set = @domain.records.map(&:name)
-    set.include?("*.#{@domain.name}.")
+    set = @domain.records.all!.map(&:name)
+    set.include?('*') || set.include?("*.#{@domain.name}.")
   end
 
   records.each do |record|

@@ -14,21 +14,24 @@ Shindo.tests("Fog::Dns[:digitalocean] | record", ['digitalocean', 'dns']) do
     @domain = Fog::DNS[:digitalocean].domains.create(name: generate_unique_domain, ip_address: '5.5.5.5')
   end
 
-  params = { :name => @domain.name, :type => 'A', :data => '1.2.3.4' }
+  [
+      { :name => "#{@domain.name}.", :type => 'A', :data => '1.2.3.4' },
+      { :name => '@', :type => 'A', :data => '1.2.3.4' },
+  ].each do |params|
+    model_tests(@domain.records, params) do |instance|
 
-  model_tests(@domain.records, params) do |instance|
+      # Newly created records should have a change id
+      tests("#id") do
+        returns(true) { instance.id != nil }
+      end
 
-    # Newly created records should have a change id
-    tests("#id") do
-      returns(true) { instance.id != nil }
+      tests("#modify").succeeds do
+        new_value = '5.5.5.5'
+        returns(true) { instance.modify('data' => new_value) }
+        returns(new_value) { instance.data }
+      end
+
     end
-
-    tests("#modify").succeeds do
-      new_value = '5.5.5.5'
-      returns(true) { instance.modify('data' => new_value) }
-      returns(new_value) { instance.data }
-    end
-
   end
 
   tests("domain.destroy").succeeds do

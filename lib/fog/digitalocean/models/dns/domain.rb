@@ -2,6 +2,9 @@ module Fog
   module DNS
     class DigitalOcean
       class Domain < Fog::Model
+
+        has_many :records, :records
+
         identity :name
         attribute :ttl
         attribute :zone_file

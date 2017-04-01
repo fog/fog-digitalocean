@@ -8,6 +8,8 @@ module Fog
         attribute :domain
 
         model Fog::DNS::DigitalOcean::Record
+        has_one   :domain,         :domain
+
 
         # Returns list of records
         # @return [Fog::DNS::DigitalOceanV2::Records] Retrieves a list of domains.
@@ -18,7 +20,7 @@ module Fog
         # @see https://developers.digitalocean.com/documentation/v2/#list-all-keys
         def all(filters = {})
           data = service.list_records(domain.name, filters)
-          links = data.body['meta']['links']
+          links = data.body['links']
           get_paged_links(links)
           keys = data.body["domain_records"]
           load(keys)
@@ -47,6 +49,27 @@ module Fog
             new(key)
           else
             nil
+          end
+        rescue Fog::Errors::NotFound
+          nil
+        end
+
+        def create(attributes = {})
+          object = super
+          self.replace(self.all!)
+          object
+        end
+
+        def delete(id)
+          id = id.id if id.is_a?(Fog::Model)
+          id = id.with_indifferent_access[:id] if id.is_a?(Hash)
+          return false unless id
+          response = service.delete_record(self.domain.name, id)
+          if response.status == 204
+            self.replace(self.select{ |dom| dom.id != id })
+            true
+          else
+            false
           end
         rescue Fog::Errors::NotFound
           nil

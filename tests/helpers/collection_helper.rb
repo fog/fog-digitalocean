@@ -1,6 +1,6 @@
 def collection_tests(collection, params = {}, mocks_implemented = true)
   def fqdn(params)
-    @fqdn ||= params[:fqdn] ? params[:fqdn] : params[:name]
+    params[:fqdn] ? params[:fqdn] : params[:name]
   end
 
   tests('success') do
@@ -9,16 +9,17 @@ def collection_tests(collection, params = {}, mocks_implemented = true)
       pending if Fog.mocking? && !mocks_implemented
       coll = collection.new(params)
       @collection_size = coll.collection.size
-      true
+      collection.size == coll.collection.size
     end
 
-    tests("#create(#{params.inspect})").succeeds do
+    tests("#create(#{params.inspect})").returns(fqdn(params)) do
       pending if Fog.mocking? && !mocks_implemented
       @instance = collection.create(params)
-      @instance.name.eql?(fqdn(params)) || @instance.name.eql?('@')
+      @collection_size = collection.size
+      @instance.name.eql?('@') ? fqdn(params) : @instance.name
     end
 
-    tests("#all").returns(@collection_size+1) do
+    tests("#{collection.class.name}#all").returns(@collection_size) do
       pending if Fog.mocking? && !mocks_implemented
       coll = collection.all
       coll.size
@@ -31,7 +32,7 @@ def collection_tests(collection, params = {}, mocks_implemented = true)
     tests("#get(#{@identity})").returns(fqdn(params)) do
       pending if Fog.mocking? && !mocks_implemented
       record = collection.get(@identity)
-      record.name
+      record.name.eql?('@') ? fqdn(params) : record.name
     end
 
     tests('Enumerable') do
@@ -79,7 +80,8 @@ def collection_tests(collection, params = {}, mocks_implemented = true)
     end
 
     if !Fog.mocking? || mocks_implemented
-      @instance.destroy
+      collection.delete(@instance)
+      @collection_size = collection.size
     end
   end
 

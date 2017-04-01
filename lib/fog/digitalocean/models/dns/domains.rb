@@ -34,6 +34,27 @@ module Fog
         rescue Fog::Errors::NotFound
           nil
         end
+
+        def delete(id)
+          id = id.name if id.is_a?(Fog::Model)
+          id = id.with_indifferent_access[:name] if id.is_a?(Hash)
+          return false unless id
+          response = service.delete_domain(id)
+          if response.status == 204
+            self.replace(self.select{ |dom| !dom.name.eql?(id)})
+            true
+          else
+            false
+          end
+        rescue Fog::Errors::NotFound
+          nil
+        end
+
+        def create(attributes = {})
+          object = super
+          self << object
+          object
+        end
       end
     end
   end

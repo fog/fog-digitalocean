@@ -4,6 +4,10 @@ module Fog
   module DNS
     class DigitalOcean
       class Record < Fog::Model
+
+        # provider_class :Record
+        # collection_name :records
+
         identity :id        # number	A unique identifier for each domain record.
         attribute :type     # string	The type of the DNS record (ex: A, CNAME, TXT, ...).
         attribute :name	    # string	The name to use for the DNS record.
@@ -46,7 +50,7 @@ module Fog
 
         def save
           options = attributes_to_options('CREATE')
-          data = service.create_record(domain.name, options).body['domain_record']
+          data = (self.id ? service.update_record(domain.name, options) : service.create_record(domain.name, options)).body['domain_record']
           merge_attributes(data)
           true
         end

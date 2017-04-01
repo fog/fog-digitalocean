@@ -6,9 +6,9 @@ Shindo.tests('Fog::DNS::DigitalOcean | list_records("domain.net") request', ['di
     'type' => String,
     'name' => String,
     'data' => String,
-    'priority' => Integer,
-    'port' => Integer,
-    'weight' => Integer,
+    # 'priority' => Integer,
+    # 'port' => Integer,
+    # 'weight' => Integer,
   }
 
   tests('success') do
