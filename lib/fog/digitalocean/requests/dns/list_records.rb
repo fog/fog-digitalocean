@@ -45,8 +45,8 @@ module Fog
                 "domain_records" => records[(filters[:page]-1) * filters[:per_page]..filters[:page] * filters[:per_page] - 1],
                 "meta" => {
                     "total" => data[:domain_records][name].count
-                }.merge(links)
-            }
+                }
+            }.merge(links)
           else
             response.status = 404
             response.body = {

@@ -65,7 +65,7 @@ module Fog
           if response.status == 200
             data[:domain_records][name] << rec.dup
             last = data[:domain_records][name].last
-            last['name'] = %(#{last['name']}.#{name}.) unless last['name'].match(%r{\.$}) unless last['name'].eql?('@') #|| last['name'].eql?('*')
+            #last['name'] = %(#{last['name']}.#{name}.) unless last['name'].match(%r{\.$}) unless last['name'].eql?('@') #|| last['name'].eql?('*')
             last['id'] = Fog::Mock.random_numbers(8).to_i
             response.body = {
                 "domain_record" => last
