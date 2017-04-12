@@ -8,8 +8,6 @@ module Fog
         attribute :domain
 
         model Fog::DNS::DigitalOcean::Record
-        has_one   :domain,         :domain
-
 
         # Returns list of records
         # @return [Fog::DNS::DigitalOceanV2::Records] Retrieves a list of domains.

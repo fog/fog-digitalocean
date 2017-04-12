@@ -14,6 +14,7 @@ module Fog
             :path    => "/v2/domains/#{id}",
           )
         end
+        alias :delete_zone :delete_domain
       end
 
       # noinspection RubyStringKeysInHashInspection
@@ -29,6 +30,7 @@ module Fog
           response.status = 204
           response
         end
+        alias :delete_zone :delete_domain
       end
     end
   end

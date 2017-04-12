@@ -8,16 +8,22 @@ module Fog
         # provider_class :Record
         # collection_name :records
 
-        identity :id        # number	A unique identifier for each domain record.
-        attribute :type     # string	The type of the DNS record (ex: A, CNAME, TXT, ...).
-        attribute :name	    # string	The name to use for the DNS record.
-        attribute :data	    # string	The value to use for the DNS record.
-        attribute :priority	# nullable number	The priority for SRV and MX records.
-        attribute :port	    # nullable number	The port for SRV records.
-        attribute :weight	  # nullable number	The weight for SRV records.
+        identity :id, type: 'Integer'         # number	A unique identifier for each domain record.
+        attribute :type                       # string	The type of the DNS record (ex: A, CNAME, TXT, ...).
+        attribute :name	                      # string	The name to use for the DNS record.
+        attribute :data                 	    # string	The value to use for the DNS record.
+        attribute :priority, type: 'Integer'  # nullable number	The priority for SRV and MX records.
+        attribute :port	   , type: 'Integer'  # nullable number	The port for SRV records.
+        attribute :weight	 , type: 'Integer'  # nullable number	The weight for SRV records.
 
-        def initialize(attributes={})
+        def initialize(new_attrs={})
+          new_attrs = new_attrs.with_indifferent_access
+          new_attrs[:data] ||= new_attrs[:value]
+          new_attrs[:data] ||= new_attrs[:host]
+          new_attrs[:priority] ||= new_attrs[:pri]
           super
+          @attributes = @attributes.with_indifferent_access
+          self
         end
 
         def domain
@@ -53,6 +59,34 @@ module Fog
           data = (self.id ? service.update_record(domain.name, options) : service.create_record(domain.name, options)).body['domain_record']
           merge_attributes(data)
           true
+        end
+
+        def to_h
+          self.attributes
+        end
+
+        def value
+          @attributes[:data]
+        end
+
+        def value=(val)
+          @attributes[:data] = val
+        end
+
+        def host
+          @attributes[:data]
+        end
+
+        def host=(val)
+          @attributes[:data] = val
+        end
+
+        def [](key)
+          @attributes[key]
+        end
+
+        def []=(key, val)
+          @attributes[key] = val
         end
 
         private

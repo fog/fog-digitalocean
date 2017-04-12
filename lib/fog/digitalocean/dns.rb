@@ -9,6 +9,8 @@ module Fog
       model_path 'fog/digitalocean/models/dns'
       model       :domain
       collection  :domains
+      model       :zone
+      collection  :zones
       model       :record
       collection  :records
 

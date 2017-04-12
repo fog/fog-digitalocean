@@ -11,6 +11,7 @@ module Fog
             :path    => "/v2/domains/#{name}",
           )
         end
+        alias :get_zone :get_domain
       end
 
       # noinspection RubyStringKeysInHashInspection
@@ -35,6 +36,7 @@ module Fog
 
           response
         end
+        alias :get_zone :get_domain
       end
     end
   end

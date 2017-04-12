@@ -10,6 +10,7 @@ module Fog
             :query   => filters
           )
         end
+        alias :list_zones :list_domains
       end
 
       # noinspection RubyStringKeysInHashInspection
@@ -28,6 +29,7 @@ module Fog
           }
           response
         end
+        alias :list_zones :list_domains
       end
     end
   end

@@ -21,7 +21,7 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
 
   tests('success') do
 
-    test('get current zone count') do
+    test('get current domain count') do
       @domain_count= 0
       response     = @service.list_domains
       if response.status == 200
@@ -32,7 +32,18 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
       response.status == 200
     end
 
-    test('create simple zone') {
+    test('get current zone count') do
+      @zone_count= 0
+      response     = @service.list_zones
+      if response.status == 200
+        @zones      = response.body['domains']
+        @zone_count = @domains.count
+      end
+
+      response.status == 200
+    end
+
+    test('create simple domain') {
       result = false
 
       response = @service.create_domain(@domain_name, '1.2.3.4')
@@ -69,7 +80,7 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
       result
     }
 
-    test("get info on hosted zone #{@zone_id}") {
+    test("get info on domain #{@zone_id}") {
       result = false
       if @zone_id
         response = @service.get_domain(@zone_id)
@@ -99,10 +110,72 @@ Shindo.tests('Fog::DNS[:digitalocean] | DNS requests', ['digitalocean', 'dns']) 
       result
     }
 
-    test('list zones') do
+    test('list domains') do
       result = false
 
       response = @service.list_domains
+      if response.status == 200
+
+        zones = response.body['domains']
+        if (zones.count > 0)
+          domain     = zones.last
+          name       = domain['name']
+          ttl        = domain['ttl']
+          zone_file  = domain['zone_file']
+
+          if name and ttl and zone_file
+
+            require 'zonefile'
+
+            zf = ::Zonefile.new(zone_file)
+
+            origin = zf.soa.with_indifferent_access[:origin]
+            ns_srv_count = zf.records.with_indifferent_access[:ns].size
+
+            if (name.length < origin.length) and (ns_srv_count > 0) and (ttl.to_i == zf.ttl.to_i)
+              result = true
+            end
+          end
+        end
+      end
+
+      result
+    end
+
+    test("get info on zone #{@zone_id}") {
+      result = false
+      if @zone_id
+        response = @service.get_zone(@zone_id)
+        if response.status == 200
+          domain     = response.body['domain']
+          name       = domain['name']
+          ttl        = domain['ttl']
+          zone_file  = domain['zone_file']
+          @zone_id = name
+
+          if name and ttl and zone_file
+
+            require 'zonefile'
+
+            zf = ::Zonefile.new(zone_file)
+
+            origin = zf.soa.with_indifferent_access[:origin]
+            ns_srv_count = zf.records.with_indifferent_access[:ns].size
+
+            if (name.length < origin.length) and (ns_srv_count > 0) and (ttl.to_i == zf.ttl.to_i)
+              result = true
+            end
+          end
+        end
+      end
+
+      result
+    }
+
+    test('list zones') do
+      result = false
+
+      response = @service.list_zones
       if response.status == 200
 
         zones = response.body['domains']

@@ -22,6 +22,7 @@ module Fog
             :body    => encoded_body,
           )
         end
+        alias :create_zone :create_domain
       end
 
       # noinspection RubyStringKeysInHashInspection
@@ -50,6 +51,7 @@ module Fog
 
           response
         end
+        alias :create_zone :create_domain
 
         def rec_to_attributes(type, rec)
           {
