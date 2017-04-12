@@ -15,7 +15,7 @@ module Fog
         # @see https://developers.digitalocean.com/documentation/v2/#list-all-images
         def all(filters = {})
           data = service.list_volumes(filters)
-          links = data.body["links"]
+          links = data.body['meta']['links']
           get_paged_links(links) 
           volumes = data.body["volumes"]
           load(volumes)
