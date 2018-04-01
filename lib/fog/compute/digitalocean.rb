@@ -1,11 +1,11 @@
-require 'fog/digitalocean/core'
-
 module Fog
   module Compute
     class DigitalOcean < Fog::Service
+      autoload :PagingCollection, File.expand_path('../digitalocean/models/paging_collection', __FILE__)
+
       requires :digitalocean_token
 
-      model_path 'fog/digitalocean/models/compute'
+      model_path 'fog/compute/digitalocean/models'
       model :server
       collection :servers
       model :image
@@ -19,7 +19,7 @@ module Fog
       model :volume
       collection :volumes
 
-      request_path 'fog/digitalocean/requests/compute'
+      request_path 'fog/compute/digitalocean/requests'
       request :list_volumes
       request :create_volume
       request :attach_volume
