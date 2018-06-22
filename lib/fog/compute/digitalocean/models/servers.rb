@@ -1,6 +1,6 @@
 require 'fog/core/collection'
-require 'fog/digitalocean/models/compute/server'
-require 'fog/digitalocean/models/paging_collection'
+require 'fog/compute/digitalocean/models/server'
+require 'fog/compute/digitalocean/models/paging_collection'
 
 module Fog
   module Compute

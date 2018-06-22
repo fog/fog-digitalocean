@@ -1,4 +1,4 @@
-require 'fog/digitalocean/models/paging_collection'
+require 'fog/compute/digitalocean/models/paging_collection'
 
 module Fog
   module Compute
