@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'bundler', '~> 1.6'
   s.add_development_dependency 'rake',    '~> 10.0'
   s.add_development_dependency 'shindo',  '~> 0.3'
-  s.add_development_dependency 'rubyzip', '~> 0.9.9'
+  s.add_development_dependency 'rubyzip', '~> 1.2.1'
   s.add_development_dependency 'mime-types'
   s.add_development_dependency 'mime-types-data'
   s.add_development_dependency 'rubocop'
