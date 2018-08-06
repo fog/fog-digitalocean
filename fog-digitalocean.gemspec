@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   ## a custom homepage, consider using your GitHub URL or the like.
   s.authors  = ["JJ Asghar", "Suraj Shirvankar"]
   s.email    = ["jj@chef.io", "surajshirvankar@gmail.com"]
-  s.homepage = "http://github.com/fog/fog-digitalocean"
+  s.homepage = "https://github.com/fog/fog-digitalocean"
   s.license  = "MIT"
 
   ## This sections is only necessary if you have C extensions.
