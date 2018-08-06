@@ -43,10 +43,10 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.extra_rdoc_files = %w[README.md]
 
-  s.add_development_dependency 'bundler', '~> 1.6'
-  s.add_development_dependency 'rake',    '~> 10.0'
-  s.add_development_dependency 'shindo',  '~> 0.3'
-  s.add_development_dependency 'rubyzip', '~> 1.2.1'
+  s.add_development_dependency 'bundler'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'shindo'
+  s.add_development_dependency 'rubyzip'
   s.add_development_dependency 'mime-types'
   s.add_development_dependency 'mime-types-data'
   s.add_development_dependency 'rubocop', '~> 0.58.2'
