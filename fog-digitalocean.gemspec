@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   ## a custom homepage, consider using your GitHub URL or the like.
   s.authors  = ["JJ Asghar", "Suraj Shirvankar"]
   s.email    = ["jj@chef.io", "surajshirvankar@gmail.com"]
-  s.homepage = "http://github.com/fog/fog-digitalocean"
+  s.homepage = "https://github.com/fog/fog-digitalocean"
   s.license  = "MIT"
 
   ## This sections is only necessary if you have C extensions.
@@ -43,17 +43,17 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.extra_rdoc_files = %w[README.md]
 
-  s.add_development_dependency 'bundler', '~> 1.6'
-  s.add_development_dependency 'rake',    '~> 10.0'
-  s.add_development_dependency 'shindo',  '~> 0.3'
-  s.add_development_dependency 'rubyzip', '~> 1.2.1'
+  s.add_development_dependency 'bundler'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'shindo'
+  s.add_development_dependency 'rubyzip'
   s.add_development_dependency 'mime-types'
   s.add_development_dependency 'mime-types-data'
-  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'rubocop', '~> 0.58.2'
 
-  s.add_dependency 'fog-core',  '~> 1.42'
-  s.add_dependency 'fog-json',  '>= 1.0'
-  s.add_dependency 'fog-xml',   '>= 0.1'
+  s.add_dependency 'fog-core'
+  s.add_dependency 'fog-json'
+  s.add_dependency 'fog-xml'
   s.add_dependency 'ipaddress', '>= 0.5'
 
   s.files = `git ls-files`.split("\n")
